@@ -92,4 +92,97 @@ def findSquareVector(vertex,length,charge):
     points = addCharges(points,charge)
     return findFinalFieldVector(target_point,points)
 
+def findDistance(point1,point2):
+    return findMag(findVector(point1,point2))
+
+def findPotential(points):
+    k = 9.0*10**9
+    electric_field = 0
+    ll = len(points)
+    for (i, point) in enumerate(points):
+        for x in xrange(i+1,ll):
+            # print str(point)+" plays "+str(points[x])
+            electric_field = electric_field + k*point[2]*points[x][2]/findDistance(point,points[x])
+    return electric_field
+
+
+def findVoltage(target,points):
+    k = 9.0*10**9
+    voltage = 0
+    ll = len(points)
+    for (i, point) in enumerate(points):
+        voltage = voltage + k*point[2]/findDistance(point,target)
+    return voltage
+
+
+
+class Point:
+
+    def __init__(self, x, y, z = "na",charge = "na",l = False):
+        self.cord = [x,y,z]
+        # self.cord[0] = x
+        # self.cord[1] = y
+        # self.cord[2] = z
+        if z == "na":
+            self.type = "2d"
+        elif l == True:
+            self.type = "l"
+        else:
+            self.type = "3d"
+        self.charge = charge
+        
+
+    def findVector(self, end_point):
+        if(self.type != end_point.type):
+            raise Exception('IncompatiblePointSpace')
+        if(self.type == "2d"):
+            vector = self.findVector2space(end_point)
+        elif(self.type == "3d"):
+            vector = self.findVector3space(end_point)
+        else:
+            vector = self.findVectorLspace(end_point)
+        return vector
+
+    def findVector3space(self,end_point):
+        vector = [end_point.cord[0] - self.cord[0],
+                  end_point.cord[1] - self.cord[1],
+                  end_point.cord[2] - self.cord[2]
+                  ]
+        return vector
+
+    def findVector2space(self,end_point):
+        vector = [end_point.cord[0] - self.cord[0],
+                  end_point.cord[1] - self.cord[1],
+                  ]
+        return vector
+
+    def findVectorLspace(self,end_point):
+        vector = [end_point.cord[0]+" - "+self.cord[0],
+                  end_point.cord[1]+" - "+self.cord[1],
+                  end_point.cord[2]+" - "+self.cord[2]
+                  ]
+        return vector
+
+    def findPotentialLspace(self,points):
+        field_strings = []
+        ll = len(points)
+        for (i, point) in enumerate(points):
+            for x in xrange(i+1,ll):
+                field_strings.append(' k*'+point.charge+'*'+points[x].charge+'/'+self.findMag(point.findVector(points[x])))
+        return ' + '.join(field_strings)
+
+    def findFieldLspace(self, target, points):
+        #target = Point("0","x","0","na",True)
+        vector_strings = []
+        for point in points:
+            vector_strings.append('')
+        return ' + '.join(vector_strings)
+    def findMag(self,vector):
+
+        mag = self.findMagLspace(vector)
+        return mag
+
+    def findMagLspace(self, vector):
+        return '( ('+vector[0]+')**(2) + ('+vector[1]+')**(2) + ('+vector[2]+')**(2) )**(.5)'
+
 

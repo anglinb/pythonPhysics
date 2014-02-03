@@ -70,6 +70,38 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_find_square_vector(self):
         self.assertEqual(listInt(large.findSquareVector(1,1.22,float("2.55e-6"))),[20870,20870])
-        
+    
+    def test_find_distance(self):
+        self.assertEqual(large.findDistance([0,0],[3,4]),5)
+
+    def test_find_potential(self):
+        self.assertEqual(large.findPotential([[0,0,1],[0,1,1]]),float("9e9"))
+
+    def test_find_volate(self):
+        self.assertEqual(large.findVoltage([0,1],[[0,0,1],[0,2,1]]),2*float("9e9"))
+
+    def test_point_instance_no_z(self):
+        point = large.Point(1,1)
+        self.assertEqual(point.type,"2d")
+
+    def test_point_instance_with_z(self):
+        point = large.Point(1,1,2)
+        self.assertEqual(point.type,"3d")
+
+    def test_point_vector_3space(self):
+        begin_point = large.Point(1,1,1)
+        end_point = large.Point(5,2,1)
+        self.assertEqual(begin_point.findVector(end_point),[4,1,0])
+
+    def test_point_vector_incompatible(self):
+        begin_point = large.Point(1,1)
+        end_point = large.Point(1,2,2)
+        self.assertRaises(Exception, begin_point.findVector, end_point)
+
+    def test_virtual_point(self):
+        point1 = large.Point("a","b","c","na",True)
+        point2 = large.Point("2a","2b","2c","na",True)
+        self.assertEqual(point1.findVector(point2),['2a - a','2b - b','2c - c'])
+
 if __name__ == '__main__':
     unittest.main()
